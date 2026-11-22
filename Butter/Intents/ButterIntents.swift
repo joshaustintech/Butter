@@ -1,31 +1,6 @@
 import AppIntents
 import SwiftData
 
-/// The fixed time ranges Siri offers for "what did I save".
-enum SavedRangeOption: String, AppEnum {
-    case today
-    case lastWeek
-    case lastMonth
-
-    nonisolated static var typeDisplayRepresentation: TypeDisplayRepresentation { "Time range" }
-
-    nonisolated static var caseDisplayRepresentations: [SavedRangeOption: DisplayRepresentation] {
-        [
-            .today: DisplayRepresentation(title: "Today"),
-            .lastWeek: DisplayRepresentation(title: "Last week"),
-            .lastMonth: DisplayRepresentation(title: "Last month"),
-        ]
-    }
-
-    var savedRange: SavedRange {
-        switch self {
-        case .today: .today
-        case .lastWeek: .lastWeek
-        case .lastMonth: .lastMonth
-        }
-    }
-}
-
 private func allRecipes() throws -> [Recipe] {
     let container = try makeContainer()
     return try ModelContext(container).fetch(FetchDescriptor<Recipe>())
@@ -43,7 +18,7 @@ struct FindRecipesIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let answer = RecipeSpeech.findAnswer(recipes: try allRecipes(), text: search)
+        let answer = RecipeAnswers.answer(to: .find(search), from: try allRecipes())
         return .result(dialog: IntentDialog(stringLiteral: answer))
     }
 }
@@ -56,11 +31,11 @@ struct RecentRecipesIntent: AppIntent {
     nonisolated static var openAppWhenRun: Bool { false }
 
     @Parameter(title: "Time range")
-    var range: SavedRangeOption
+    var range: SavedRange
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
-        let answer = RecipeSpeech.recentAnswer(recipes: try allRecipes(), range: range.savedRange)
+        let answer = RecipeAnswers.answer(to: .saved(range), from: try allRecipes())
         return .result(dialog: IntentDialog(stringLiteral: answer))
     }
 }

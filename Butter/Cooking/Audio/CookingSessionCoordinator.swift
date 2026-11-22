@@ -19,6 +19,9 @@ final class CookingSessionCoordinator {
     /// False when the listener could not start; buttons and Siri still work.
     private(set) var isHandsFreeAvailable = true
 
+    /// The text of the Step the session is on.
+    var currentStep: String { steps[progress.index] }
+
     @ObservationIgnored private let steps: [String]
     @ObservationIgnored private let synthesizer: any SpeechSynthesizing
     @ObservationIgnored private let listener: any CommandListening
@@ -100,7 +103,7 @@ final class CookingSessionCoordinator {
 
     private func speakCurrentStep() {
         interrupt()
-        let text = steps[progress.index]
+        let text = currentStep
         state = .speaking
         speakTask = Task { [weak self] in
             guard let self else { return }
