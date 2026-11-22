@@ -71,6 +71,12 @@ struct RecipeDraftTests {
         #expect(RecipeDraft(photo: Data([1])).hasContent)
     }
 
+    @Test func whitespaceOnlyFieldsAreNotContent() {
+        #expect(!RecipeDraft(title: "  \n").hasContent)
+        #expect(!RecipeDraft(ingredientsText: " \n\t ").hasContent)
+        #expect(!RecipeDraft(stepsText: "\n\n").hasContent)
+    }
+
     @Test func savedRecipeHasNoSourceAndDatesAreSet() throws {
         let container = try makeContainer(inMemory: true)
         defer { withExtendedLifetime(container) {} }

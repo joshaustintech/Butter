@@ -26,9 +26,7 @@ struct AddRecipeForm: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: ButterSpacing.lg) {
                     VStack(alignment: .leading, spacing: ButterSpacing.xs) {
-                        Text("Title")
-                            .font(.headline)
-                            .foregroundStyle(Color.butterLabel)
+                        FieldHeader(label: "Title")
                         TextField("Recipe title", text: $draft.title)
                             .font(.body)
                             .frame(minHeight: 44)
@@ -75,12 +73,11 @@ private let previewFilled = RecipeDraft(
     stepsText: "Whisk the eggs.\nFold in the flour.\nCook until golden."
 )
 
-private let previewWithPhoto = RecipeDraft(
-    title: previewFilled.title,
-    ingredientsText: previewFilled.ingredientsText,
-    stepsText: previewFilled.stepsText,
-    photo: UIImage(systemName: "fork.knife")?.pngData()
-)
+private let previewWithPhoto: RecipeDraft = {
+    var draft = previewFilled
+    draft.photo = UIImage(systemName: "fork.knife")?.pngData()
+    return draft
+}()
 
 #Preview("Light, empty") {
     AddRecipeForm(onSave: { _ in }, onClose: {})

@@ -8,9 +8,7 @@ struct RecipeTextField: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: ButterSpacing.xs) {
-            Text(label)
-                .font(.headline)
-                .foregroundStyle(Color.butterLabel)
+            FieldHeader(label: label)
             TextEditor(text: $text)
                 .font(.body)
                 .scrollContentBackground(.hidden)

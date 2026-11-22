@@ -21,6 +21,9 @@ final class Source {
         set { kindRawValue = newValue.rawValue }
     }
 
+    /// The webpage address, only when the Source is a webpage.
+    var webpageURL: URL? { kind == .webpage ? url : nil }
+
     init(webpage url: URL?) {
         self.kindRawValue = Kind.webpage.rawValue
         self.url = url

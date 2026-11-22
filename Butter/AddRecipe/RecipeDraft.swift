@@ -20,9 +20,9 @@ struct RecipeDraft: Equatable {
     /// One Step per non-blank line, bullets and numbers removed, in typed order.
     var steps: [String] { Self.lines(of: stepsText) }
 
-    /// True when anything was typed or a photo was chosen.
+    /// True when anything other than whitespace was typed, or a photo was chosen.
     var hasContent: Bool {
-        !title.isEmpty || !ingredientsText.isEmpty || !stepsText.isEmpty || photo != nil
+        !trimmedTitle.isEmpty || !ingredients.isEmpty || !steps.isEmpty || photo != nil
     }
 
     /// A Recipe needs a real word in its title. Everything else is optional.
