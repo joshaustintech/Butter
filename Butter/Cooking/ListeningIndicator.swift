@@ -4,12 +4,16 @@ import SwiftUI
 struct ListeningIndicator: View {
     let isPaused: Bool
 
+    private var text: String { isPaused ? "Paused" : "Listening" }
+
     var body: some View {
-        Label(isPaused ? "Paused" : "Listening",
+        Label(text,
               systemImage: isPaused ? "pause.fill" : "waveform")
             .font(.subheadline)
             .foregroundStyle(Color.butterLabelSecondary)
-            .accessibilityLabel(isPaused ? "Paused" : "Listening")
+            .onChange(of: isPaused) {
+                AccessibilityNotification.Announcement(text).post()
+            }
     }
 }
 

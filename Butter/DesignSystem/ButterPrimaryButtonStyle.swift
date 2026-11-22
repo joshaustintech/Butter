@@ -23,7 +23,7 @@ extension ButtonStyle where Self == ButterPrimaryButtonStyle {
 }
 
 /// Preview-only example showing the style enabled and disabled.
-struct ButterPrimaryButtonExample: View {
+private struct ButterPrimaryButtonExample: View {
     var body: some View {
         VStack(spacing: ButterSpacing.md) {
             Button("Save recipe") {}
