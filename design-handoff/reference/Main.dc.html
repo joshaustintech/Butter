@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recipes List</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+button{font-family:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+input::placeholder{color:var(--muted);opacity:1}
+</style>
+</helmet>
+<div style="{{themeVars}};width:390px;height:844px;box-sizing:border-box;background:var(--bg);font-family:Inter,-apple-system,system-ui,sans-serif;color:var(--ink);display:flex;flex-direction:column;overflow:hidden">
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:62px 16px 24px;display:flex;flex-direction:column;gap:16px">
+
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <h1 style="margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:44px;line-height:1;letter-spacing:-0.01em;color:var(--ink)">Recipes</h1>
+        <p style="margin:0;font-size:14px;color:var(--muted)">{{countLabel}}</p>
+      </div>
+      <a href="{{editorHref}}" aria-label="New recipe" style="width:44px;height:44px;border-radius:22px;background:var(--accent);color:var(--onAccent);display:flex;align-items:center;justify-content:center;flex:none">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </a>
+    </div>
+
+    <label style="display:flex;align-items:center;gap:8px;height:44px;box-sizing:border-box;padding:0 12px;border-radius:12px;background:var(--fill)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="stroke:var(--muted)"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+      <span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search recipes</span>
+      <input type="search" placeholder="Search recipes" style="flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink);outline:none">
+    </label>
+
+    <div role="group" aria-label="Sort recipes" style="display:flex;gap:4px;padding:3px;border-radius:12px;background:var(--fill)">
+      <button onClick="{{sortLatest}}" aria-pressed="{{isLatest}}" style="{{latestStyle}}">Latest</button>
+      <button onClick="{{sortName}}" aria-pressed="{{isName}}" style="{{nameStyle}}">Name</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;border-radius:16px;background:var(--card);border:1px solid var(--line);overflow:hidden">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+        <a href="{{r.href}}" style="display:flex;align-items:center;gap:14px;padding:12px 14px;min-height:44px;border-top:{{r.border}}">
+          <div style="width:60px;height:60px;border-radius:14px;flex:none;display:flex;align-items:center;justify-content:center;background:{{r.tint}}">
+            <span style="font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:700;font-size:30px;color:var(--ink)">{{r.initial}}</span>
+          </div>
+          <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:4px">
+            <span style="font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:21px;line-height:1.1;color:var(--ink)">{{r.name}}</span>
+            <div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted)">
+              <sc-if value="{{r.hasRating}}" hint-placeholder-val="{{ true }}">
+                <span style="display:flex;align-items:center;gap:4px">
+                  <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style="fill:var(--star)"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+                  {{r.rating}}
+                </span>
+              </sc-if>
+              <sc-if value="{{r.hasTime}}" hint-placeholder-val="{{ true }}">
+                <span>{{r.time}}</span>
+              </sc-if>
+              <sc-if value="{{r.bare}}" hint-placeholder-val="{{ false }}">
+                <span>No details yet</span>
+              </sc-if>
+            </div>
+          </div>
+          <svg width="10" height="16" viewBox="0 0 10 16" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="stroke:var(--chevron)"><path d="M2 2l6 6-6 6"/></svg>
+        </a>
+      </sc-for>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"appearance":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sort: 'latest' };
+  }
+  renderVals() {
+    const dark = this.props.appearance === 'dark';
+    const T = dark ? {
+      bg: '#1F1A15', card: '#2A231C', fill: '#352C23', line: '#433829', ink: '#F1E8D6', muted: '#BBAC95',
+      accent: '#A9C08F', onAccent: '#1F1A15', star: '#E0B352', chevron: '#8F806C',
+      tintSage: '#3B4630', tintButter: '#4D4222', tintRose: '#4F3030', shadow: 'none'
+    } : {
+      bg: '#F5EEDF', card: '#FBF7EC', fill: '#E9DFCB', line: '#E2D6BD', ink: '#3B2E25', muted: '#6B5A4C',
+      accent: '#4F6340', onAccent: '#FBF7EC', star: '#B8862B', chevron: '#8A7868',
+      tintSage: '#D5DFC4', tintButter: '#F0DDA0', tintRose: '#EBC9C4', shadow: '0 1px 2px rgba(59,46,37,.18)'
+    };
+    const themeVars = Object.keys(T).map((k) => '--' + k + ':' + T[k]).join(';') + ';color-scheme:' + (dark ? 'dark' : 'light');
+    const sfx = dark ? 'Dark' : '';
+    const data = [
+      { name: 'Roast Turkey & Apple Sandwich', added: 6, rating: '4.5', time: '10 min', tint: 'var(--tintSage)' },
+      { name: 'Lemon Ricotta Pancakes', added: 5, rating: '4.5', time: '25 min', tint: 'var(--tintButter)' },
+      { name: 'Rhubarb Galette', added: 4, rating: '5.0', time: '1 hr 20 min', tint: 'var(--tintRose)' },
+      { name: 'Herb Garden Focaccia', added: 3, rating: '4.0', time: '3 hr', tint: 'var(--tintSage)' },
+      { name: 'Honey Oat Scones', added: 2, rating: '4.5', time: '40 min', tint: 'var(--tintButter)' },
+      { name: 'Radish & Chive Butter', added: 1, rating: null, time: null, tint: 'var(--tintRose)' }
+    ];
+    const sort = this.state.sort;
+    const sorted = data.slice().sort((a, b) => sort === 'name' ? a.name.localeCompare(b.name) : b.added - a.added);
+    const rows = sorted.map((d, i) => ({
+      ...d,
+      initial: d.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 1).map((w) => w[0].toUpperCase()).join(''),
+      hasRating: !!d.rating,
+      hasTime: !!d.time,
+      bare: !d.rating && !d.time,
+      href: 'RecipeDetail' + sfx + '.dc.html',
+      border: i === 0 ? 'none' : '1px solid var(--line)'
+    }));
+    const on = 'flex:1;height:38px;border:0;border-radius:9px;background:var(--card);color:var(--ink);font-size:15px;font-weight:600;box-shadow:' + T.shadow;
+    const off = 'flex:1;height:38px;border:0;border-radius:9px;background:transparent;color:var(--muted);font-size:15px;font-weight:500';
+    return {
+      themeVars,
+      rows,
+      editorHref: 'RecipeEditor' + sfx + '.dc.html',
+      countLabel: data.length + ' recipes · sorted by ' + (sort === 'name' ? 'name' : 'latest'),
+      isLatest: sort === 'latest' ? 'true' : 'false',
+      isName: sort === 'name' ? 'true' : 'false',
+      latestStyle: sort === 'latest' ? on : off,
+      nameStyle: sort === 'name' ? on : off,
+      sortLatest: () => this.setState({ sort: 'latest' }),
+      sortName: () => this.setState({ sort: 'name' })
+    };
+  }
+}
+</script>
+</body>
+</html>

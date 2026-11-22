@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Create or Edit Recipe</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+input,textarea{font-family:inherit;color:var(--ink);outline:none}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:1}
+button:disabled{opacity:.35;cursor:default}
+</style>
+</helmet>
+<div style="{{themeVars}};width:390px;height:844px;box-sizing:border-box;background:var(--bg);font-family:Inter,-apple-system,system-ui,sans-serif;color:var(--ink);display:flex;flex-direction:column;overflow:hidden">
+
+  <div style="flex:none;padding:56px 12px 8px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid var(--line);background:var(--bg)">
+    <a href="{{backHref}}" style="display:flex;align-items:center;height:44px;padding:0 10px;font-size:17px;font-weight:500;color:var(--accent)">Cancel</a>
+    <h1 style="margin:0;font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:24px">{{heading}}</h1>
+    <a href="{{backHref}}" style="display:flex;align-items:center;height:44px;padding:0 10px;font-size:17px;font-weight:600;color:var(--accent)">Save</a>
+  </div>
+
+  <div style="flex:1;min-height:0;overflow-y:auto;padding:20px 16px 40px;display:flex;flex-direction:column;gap:22px">
+
+    <section style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;padding:0 4px">
+        <label for="title" style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">Title</label>
+        <span style="font-size:12px;color:var(--muted)">Required</span>
+      </div>
+      <input id="title" type="text" value="{{title}}" onChange="{{setTitle}}" placeholder="Recipe name" style="height:52px;box-sizing:border-box;padding:0 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:24px">
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;padding:0 4px">
+        <span style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">Photo</span>
+        <span style="font-size:12px;color:var(--muted)">Optional</span>
+      </div>
+      <button type="button" style="display:flex;align-items:center;gap:14px;padding:12px;border:1.5px dashed var(--leaf);border-radius:16px;background:var(--fill);text-align:left;color:var(--ink)">
+        <!-- Monogram stands in until a photo is chosen -->
+        <span aria-hidden="true" style="width:72px;height:72px;flex:none;border-radius:12px;background:var(--hero0);display:flex;align-items:center;justify-content:center">
+          <span style="width:52px;height:52px;border-radius:26px;background:var(--hero1);border:1.5px solid var(--accent);box-shadow:inset 0 0 0 3px var(--hero1),inset 0 0 0 4px var(--accent);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-weight:700;font-size:28px;color:var(--ink)">{{mono}}</span>
+        </span>
+        <span style="display:flex;flex-direction:column;gap:2px;min-width:0">
+          <span style="font-size:16px;font-weight:600;color:var(--accent)">Add Photo</span>
+          <span style="font-size:13px;line-height:1.35;color:var(--muted)">Without one, the title's first letter is shown.</span>
+        </span>
+      </button>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;min-height:32px">
+        <span style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">Details</span>
+          <span style="font-size:12px;color:var(--muted)">Optional</span>
+        </span>
+        <button type="button" onClick="{{toggleDetails}}" style="height:44px;margin:-6px -8px;padding:0 12px;border:0;background:transparent;color:var(--accent);font-size:16px;font-weight:600">{{detailsBtn}}</button>
+      </div>
+      <div data-list="details" style="border-radius:14px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden">
+        <sc-for list="{{details}}" as="d" hint-placeholder-count="3">
+          <div data-row="1" style="display:flex;align-items:center;justify-content:space-between;min-height:52px;padding:0 8px 0 16px;border-top:{{d.border}};background:{{d.bg}}">
+            <span style="font-size:16px">{{d.label}}</span>
+            <div style="display:flex;align-items:center;gap:4px">
+              <sc-if value="{{d.editing}}" hint-placeholder-val="{{ true }}">
+                <input type="text" inputmode="numeric" pattern="[0-9]*" value="{{d.text}}" onChange="{{d.change}}" placeholder="Optional" aria-label="{{d.label}}{{d.unitLabel}}" style="width:96px;height:44px;box-sizing:border-box;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:16px;text-align:right">
+                <span style="font-size:16px;color:var(--muted);min-width:34px;padding-right:8px">{{d.unit}}</span>
+              </sc-if>
+              <sc-if value="{{d.ordering}}" hint-placeholder-val="{{ false }}">
+                <span style="font-size:16px;color:{{d.valueColor}};text-align:right">{{d.value}}</span>
+              </sc-if>
+              <sc-if value="{{d.ordering}}" hint-placeholder-val="{{ false }}">
+                <button type="button" onPointerDown="{{d.drag}}" aria-label="Drag to reorder {{d.label}}" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;user-select:none">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="stroke:var(--muted)"><path d="M4 8h16M4 12h16M4 16h16"/></svg>
+                </button>
+              </sc-if>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <p style="margin:0;padding:0 4px;font-size:13px;line-height:1.4;color:var(--muted)">Type a whole number, or leave blank to skip it.</p>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;padding:0 4px">
+        <span style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">My Rating</span>
+        <span style="font-size:12px;color:var(--muted)">Optional</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:2px;padding:8px;border-radius:14px;background:var(--card);border:1px solid var(--line)">
+        <div role="group" aria-label="Rating, tap the left or right half of a star" style="display:flex;justify-content:center">
+          <sc-for list="{{rateStars}}" as="s" hint-placeholder-count="5">
+            <div style="position:relative;width:52px;height:52px">
+              <span style="position:absolute;left:12px;top:12px;width:28px;height:28px;display:block">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true" style="position:absolute;left:0;top:0;stroke:var(--star)"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>
+                <span style="position:absolute;left:0;top:0;bottom:0;overflow:hidden;width:{{s.w}}"><svg width="28" height="28" viewBox="0 0 24 24" aria-hidden="true" style="display:block;fill:var(--star)"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg></span>
+              </span>
+              <button type="button" onClick="{{s.pickHalf}}" aria-label="{{s.halfLabel}}" style="position:absolute;left:0;top:0;width:26px;height:52px;border:0;background:transparent;padding:0"></button>
+              <button type="button" onClick="{{s.pickFull}}" aria-label="{{s.fullLabel}}" style="position:absolute;right:0;top:0;width:26px;height:52px;border:0;background:transparent;padding:0"></button>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:0 0 0 8px">
+          <span style="font-size:16px;color:{{ratingColor}}">{{ratingText}}</span>
+          <div style="display:flex;align-items:center">
+            <button type="button" onClick="{{ratingDown}}" disabled="{{ratingEmpty}}" aria-label="Decrease rating by half a star" style="width:44px;height:44px;border:0;background:transparent;color:var(--accent);font-size:24px;font-weight:500">−</button>
+            <button type="button" onClick="{{ratingUp}}" disabled="{{ratingFull}}" aria-label="Increase rating by half a star" style="width:44px;height:44px;border:0;background:transparent;color:var(--accent);font-size:24px;font-weight:500">+</button>
+            <button type="button" onClick="{{ratingClear}}" disabled="{{ratingEmpty}}" style="height:44px;padding:0 12px;border:0;background:transparent;color:var(--accent);font-size:16px;font-weight:600">Clear</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;min-height:32px">
+        <span style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">Ingredients</span>
+          <span style="font-size:12px;color:var(--muted)">Optional</span>
+        </span>
+        <button type="button" onClick="{{toggleIng}}" disabled="{{noIng}}" style="height:44px;margin:-6px -8px;padding:0 12px;border:0;background:transparent;color:var(--accent);font-size:16px;font-weight:600">{{ingBtn}}</button>
+      </div>
+      <div data-list="ing" style="border-radius:14px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden">
+        <sc-for list="{{ingredients}}" as="i" hint-placeholder-count="4">
+          <div data-row="1" style="display:flex;align-items:center;gap:4px;padding:0 8px 0 16px;border-top:{{i.border}};background:{{i.bg}}">
+            <label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" for="{{i.id}}">Ingredient {{i.n}}</label>
+            <input id="{{i.id}}" type="text" value="{{i.text}}" onChange="{{i.change}}" style="flex:1;min-width:0;height:52px;border:0;background:transparent;font-size:16px">
+            <sc-if value="{{i.editing}}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{i.remove}}" aria-label="Remove ingredient {{i.n}}" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="stroke:var(--danger)"><circle cx="12" cy="12" r="9"/><path d="M8 12h8"/></svg>
+              </button>
+            </sc-if>
+            <sc-if value="{{i.ordering}}" hint-placeholder-val="{{ false }}">
+              <button type="button" onPointerDown="{{i.drag}}" aria-label="Drag to reorder ingredient {{i.n}}" style="width:44px;height:44px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;user-select:none">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="stroke:var(--muted)"><path d="M4 8h16M4 12h16M4 16h16"/></svg>
+              </button>
+            </sc-if>
+          </div>
+        </sc-for>
+        <button type="button" onClick="{{addIng}}" style="display:flex;align-items:center;gap:10px;height:52px;padding:0 16px;border:0;border-top:{{addBorderIng}};background:transparent;color:var(--accent);font-size:16px;font-weight:600">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="stroke:var(--accent)"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+          Add Ingredient
+        </button>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px;min-height:32px">
+        <span style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">Method</span>
+          <span style="font-size:12px;color:var(--muted)">Optional</span>
+        </span>
+        <button type="button" onClick="{{toggleSteps}}" disabled="{{noSteps}}" style="height:44px;margin:-6px -8px;padding:0 12px;border:0;background:transparent;color:var(--accent);font-size:16px;font-weight:600">{{stepsBtn}}</button>
+      </div>
+      <div data-list="steps" style="border-radius:14px;background:var(--card);border:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden">
+        <sc-for list="{{steps}}" as="s" hint-placeholder-count="3">
+          <div data-row="1" style="display:flex;align-items:flex-start;gap:12px;padding:12px 8px 12px 16px;border-top:{{s.border}};background:{{s.bg}}">
+            <span style="width:28px;height:28px;flex:none;margin-top:2px;border-radius:14px;background:var(--accent);color:var(--onAccent);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',Georgia,serif;font-weight:700;font-size:17px">{{s.n}}</span>
+            <label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" for="{{s.id}}">Step {{s.n}}</label>
+            <textarea id="{{s.id}}" rows="3" value="{{s.text}}" onChange="{{s.change}}" style="flex:1;min-width:0;border:0;background:transparent;resize:none;font-size:16px;line-height:1.45;padding:2px 0"></textarea>
+            <sc-if value="{{s.ordering}}" hint-placeholder-val="{{ false }}">
+              <button type="button" onPointerDown="{{s.drag}}" aria-label="Drag to reorder step {{s.n}}" style="width:44px;height:44px;flex:none;border:0;background:transparent;display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;user-select:none">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" aria-hidden="true" style="stroke:var(--muted)"><path d="M4 8h16M4 12h16M4 16h16"/></svg>
+              </button>
+            </sc-if>
+          </div>
+        </sc-for>
+        <button type="button" onClick="{{addStep}}" style="display:flex;align-items:center;gap:10px;height:52px;padding:0 16px;border:0;border-top:{{addBorderStep}};background:transparent;color:var(--accent);font-size:16px;font-weight:600">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="stroke:var(--accent)"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+          Add Step
+        </button>
+      </div>
+    </section>
+
+    <section style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;padding:0 4px">
+        <label for="notes" style="font-size:13px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)">Review Notes</label>
+        <span style="font-size:12px;color:var(--muted)">Optional</span>
+      </div>
+      <textarea id="notes" rows="4" value="{{notes}}" onChange="{{setNotes}}" placeholder="How did it turn out?" style="box-sizing:border-box;padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--card);resize:none;font-size:16px;line-height:1.45"></textarea>
+    </section>
+
+    <sc-if value="{{isEdit}}" hint-placeholder-val="{{ true }}">
+      <button type="button" style="height:50px;border:1px solid var(--dangerLine);border-radius:14px;background:transparent;color:var(--danger);font-size:17px;font-weight:600">Delete Recipe</button>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"appearance":{"editor":"enum","options":["light","dark"],"default":"light","section":"Theme"},"mode":{"editor":"enum","options":["edit","new"],"default":"edit","section":"Screen"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    const edit = props.mode !== 'new';
+    this.nextId = 100;
+    this.state = {
+      title: edit ? 'Rhubarb Galette' : '',
+      notes: edit ? 'Tart and sweet in just the right measure. Next time, a little orange zest in the crust.' : '',
+      prep: edit ? '30' : '', bake: edit ? '50' : '', serves: edit ? '6' : '',
+      rating: edit ? 5 : null,
+      detailOrder: ['prep', 'bake', 'serves'],
+      ing: edit ? ['1¼ cups all-purpose flour', '½ cup cold butter, cubed', '3 tbsp ice water', '1 lb rhubarb, sliced', '⅓ cup sugar'].map((text, i) => ({ id: 'i' + i, text })) : [],
+      steps: edit ? [
+        'Rub the butter into the flour until crumbly, then add ice water and bring together. Chill for 30 minutes.',
+        'Toss the rhubarb with sugar and cornstarch.',
+        'Roll the dough into a rough round, pile the filling in the centre and fold the edges over.'
+      ].map((text, i) => ({ id: 's' + i, text })) : [],
+      orderDetails: false, orderIng: false, orderSteps: false
+    };
+  }
+  fmtTime(m) {
+    if (m == null) return 'Not set';
+    const h = Math.floor(m / 60), r = m % 60;
+    if (h && r) return h + ' hr ' + r + ' min';
+    if (h) return h + ' hr';
+    return m + ' min';
+  }
+  // Drag-to-reorder: press the grip, drag over another row, release.
+  // Only wired up while a section is in Reorder (edit) mode.
+  dragger(listKey, id) {
+    const idOf = (x) => (typeof x === 'string' ? x : x.id);
+    return (e) => {
+      if (e.button != null && e.button !== 0) return;
+      e.preventDefault();
+      const doc = e.currentTarget.ownerDocument;
+      const container = e.currentTarget.closest('[data-list]');
+      this.setState({ dragId: id });
+      const onMove = (ev) => {
+        const rows = Array.from(container.querySelectorAll('[data-row]'));
+        if (!rows.length) return;
+        const y = ev.clientY;
+        let j = rows.findIndex((r) => { const b = r.getBoundingClientRect(); return y >= b.top && y < b.bottom; });
+        if (j < 0) j = y < rows[0].getBoundingClientRect().top ? 0 : rows.length - 1;
+        const arr = this.state[listKey];
+        const i = arr.findIndex((x) => idOf(x) === id);
+        if (i < 0 || j === i || j >= arr.length) return;
+        const c = arr.slice();
+        const item = c.splice(i, 1)[0];
+        c.splice(j, 0, item);
+        this.setState({ [listKey]: c });
+      };
+      const onUp = () => {
+        doc.removeEventListener('pointermove', onMove);
+        doc.removeEventListener('pointerup', onUp);
+        doc.removeEventListener('pointercancel', onUp);
+        this.setState({ dragId: null });
+      };
+      doc.addEventListener('pointermove', onMove);
+      doc.addEventListener('pointerup', onUp);
+      doc.addEventListener('pointercancel', onUp);
+    };
+  }
+  renderVals() {
+    const dark = this.props.appearance === 'dark';
+    const edit = this.props.mode !== 'new';
+    const T = dark ? {
+      bg: '#1F1A15', card: '#2A231C', fill: '#352C23', line: '#433829', ink: '#F1E8D6', muted: '#BBAC95',
+      accent: '#A9C08F', onAccent: '#1F1A15', star: '#E0B352', leaf: '#6F8A5A', danger: '#E59A94', dangerLine: '#6B403C',
+      hero0: '#33241F', hero1: '#3E2B27'
+    } : {
+      bg: '#F5EEDF', card: '#FBF7EC', fill: '#E9DFCB', line: '#E2D6BD', ink: '#3B2E25', muted: '#6B5A4C',
+      accent: '#4F6340', onAccent: '#FBF7EC', star: '#B8862B', leaf: '#8FA37A', danger: '#9A4A46', dangerLine: '#D2B0AB',
+      hero0: '#EBC9C4', hero1: '#F4DDD8'
+    };
+    const themeVars = Object.keys(T).map((k) => '--' + k + ':' + T[k]).join(';') + ';color-scheme:' + (dark ? 'dark' : 'light');
+    const sfx = dark ? 'Dark' : '';
+    const st = this.state;
+    const border = (i) => i === 0 ? 'none' : '1px solid var(--line)';
+
+    // Each detail is typed in as a positive whole number; blank = not set.
+    const cfg = {
+      prep: { label: 'Prep time', unit: 'min', fmt: (v) => this.fmtTime(v) },
+      bake: { label: 'Bake time', unit: 'min', fmt: (v) => this.fmtTime(v) },
+      serves: { label: 'Serves', unit: '', fmt: (v) => v == null ? 'Not set' : String(v) }
+    };
+    const order = st.detailOrder;
+    const details = order.map((key, i) => {
+      const c = cfg[key], raw = st[key];
+      const v = raw ? parseInt(raw, 10) : null;
+      return {
+        label: c.label, value: c.fmt(v), isEmpty: v == null,
+        text: raw || '',
+        unit: c.unit,
+        unitLabel: c.unit ? ' in minutes' : '',
+        change: (e) => {
+          // digits only, no leading zeros, so entries are always positive
+          const digits = e.target.value.replace(/[^0-9]/g, '').replace(/^0+/, '').slice(0, 4);
+          this.setState({ [key]: digits });
+        },
+        valueColor: v == null ? 'var(--muted)' : 'var(--ink)',
+        border: border(i),
+        editing: !st.orderDetails, ordering: st.orderDetails,
+        bg: st.dragId === key ? 'var(--fill)' : 'transparent',
+        drag: this.dragger('detailOrder', key)
+      };
+    });
+
+    const r = st.rating;
+    const rateStars = [1, 2, 3, 4, 5].map((n) => ({
+      w: r != null && r >= n ? '100%' : (r != null && r >= n - 0.5 ? '50%' : '0%'),
+      halfLabel: (n - 0.5) + ' stars',
+      fullLabel: n + (n === 1 ? ' star' : ' stars'),
+      pickHalf: () => this.setState({ rating: n - 0.5 }),
+      pickFull: () => this.setState({ rating: n })
+    }));
+
+    const ing = st.ing.map((it, i, a) => ({
+      id: it.id, text: it.text, n: i + 1, border: border(i),
+      editing: !st.orderIng, ordering: st.orderIng,
+      first: i === 0, last: i === a.length - 1,
+      change: (e) => { const t = e.target.value; this.setState({ ing: st.ing.map((x) => x.id === it.id ? { ...x, text: t } : x) }); },
+      remove: () => this.setState({ ing: st.ing.filter((x) => x.id !== it.id) }),
+      bg: st.dragId === it.id ? 'var(--fill)' : 'transparent',
+      drag: this.dragger('ing', it.id)
+    }));
+    const steps = st.steps.map((it, i, a) => ({
+      id: it.id, text: it.text, n: i + 1, border: border(i),
+      ordering: st.orderSteps,
+      first: i === 0, last: i === a.length - 1,
+      change: (e) => { const t = e.target.value; this.setState({ steps: st.steps.map((x) => x.id === it.id ? { ...x, text: t } : x) }); },
+      bg: st.dragId === it.id ? 'var(--fill)' : 'transparent',
+      drag: this.dragger('steps', it.id)
+    }));
+
+    const title = st.title;
+    return {
+      themeVars,
+      backHref: edit ? 'RecipeDetail' + sfx + '.dc.html' : 'Main' + sfx + '.dc.html',
+      heading: edit ? 'Edit Recipe' : 'New Recipe',
+      isEdit: edit,
+      title,
+      setTitle: (e) => this.setState({ title: e.target.value }),
+      mono: title.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 1).map((w) => w[0].toUpperCase()).join(''),
+      details,
+      detailsBtn: st.orderDetails ? 'Done' : 'Reorder',
+      toggleDetails: () => this.setState({ orderDetails: !st.orderDetails }),
+      rateStars,
+      ratingText: r == null ? 'Not rated' : r.toFixed(1) + ' of 5',
+      ratingColor: r == null ? 'var(--muted)' : 'var(--ink)',
+      ratingEmpty: r == null,
+      ratingFull: r === 5,
+      ratingUp: () => this.setState({ rating: r == null ? 0.5 : Math.min(5, r + 0.5) }),
+      ratingDown: () => { if (r != null) this.setState({ rating: r - 0.5 <= 0 ? null : r - 0.5 }); },
+      ratingClear: () => this.setState({ rating: null }),
+      ingredients: ing,
+      noIng: ing.length < 2,
+      ingBtn: st.orderIng && ing.length > 1 ? 'Done' : 'Reorder',
+      toggleIng: () => this.setState({ orderIng: !st.orderIng }),
+      addBorderIng: ing.length ? '1px solid var(--line)' : 'none',
+      addIng: () => this.setState({ ing: st.ing.concat([{ id: 'i' + (this.nextId++), text: '' }]) }),
+      steps,
+      noSteps: steps.length < 2,
+      stepsBtn: st.orderSteps && steps.length > 1 ? 'Done' : 'Reorder',
+      toggleSteps: () => this.setState({ orderSteps: !st.orderSteps }),
+      addBorderStep: steps.length ? '1px solid var(--line)' : 'none',
+      addStep: () => this.setState({ steps: st.steps.concat([{ id: 's' + (this.nextId++), text: '' }]) }),
+      notes: st.notes,
+      setNotes: (e) => this.setState({ notes: e.target.value })
+    };
+  }
+}
+</script>
+</body>
+</html>
