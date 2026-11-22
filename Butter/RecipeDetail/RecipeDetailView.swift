@@ -40,15 +40,8 @@ struct RecipeDetailView: View {
     }
 
     private func photoCard(_ image: UIImage) -> some View {
-        Image(uiImage: image)
-            .resizable()
-            .scaledToFill()
-            .frame(maxWidth: .infinity)
-            .aspectRatio(4 / 3, contentMode: .fit)
-            .clipShape(RoundedRectangle(cornerRadius: ButterRadius.medium, style: .continuous))
-            .padding(ButterSpacing.xs)
-            .background(Color.butterSurface, in: RoundedRectangle(cornerRadius: ButterRadius.large, style: .continuous))
-            .accessibilityLabel("Photo of the dish")
+        RecipePhoto(image: image)
+            .butterCard()
     }
 
     private var ingredientsCard: some View {
@@ -102,16 +95,18 @@ struct RecipeDetailView: View {
                 }
             }
 
-            Text("Saved \(recipe.savedDate.formatted(date: .abbreviated, time: .omitted))")
-                .font(.caption)
-                .foregroundStyle(Color.butterLabelSecondary)
+            footerDate("Saved", recipe.savedDate)
 
             if recipe.updatedDate > recipe.savedDate {
-                Text("Updated \(recipe.updatedDate.formatted(date: .abbreviated, time: .omitted))")
-                    .font(.caption)
-                    .foregroundStyle(Color.butterLabelSecondary)
+                footerDate("Updated", recipe.updatedDate)
             }
         }
+    }
+
+    private func footerDate(_ label: String, _ date: Date) -> some View {
+        Text("\(label) \(date.formatted(date: .abbreviated, time: .omitted))")
+            .font(.caption)
+            .foregroundStyle(Color.butterLabelSecondary)
     }
 }
 

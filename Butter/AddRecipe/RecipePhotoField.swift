@@ -13,14 +13,7 @@ struct RecipePhotoField: View {
         VStack(alignment: .leading, spacing: ButterSpacing.xs) {
             FieldHeader(label: "Photo")
             if let photo, let image = UIImage(data: photo) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(maxWidth: .infinity)
-                    .aspectRatio(4 / 3, contentMode: .fit)
-                    .clipped()
-                    .clipShape(RoundedRectangle(cornerRadius: ButterRadius.medium, style: .continuous))
-                    .accessibilityLabel("Photo of the dish")
+                RecipePhoto(image: image)
                 Button("Remove photo", role: .destructive) {
                     loading?.cancel()
                     self.photo = nil

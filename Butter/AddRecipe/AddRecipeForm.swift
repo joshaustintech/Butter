@@ -39,6 +39,7 @@ struct AddRecipeForm: View {
                 .padding(ButterSpacing.md)
             }
             .background(Color.butterBackground)
+            .background(SwipeDismissObserver(onAttempt: cancel))
             .navigationTitle("New Recipe")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
