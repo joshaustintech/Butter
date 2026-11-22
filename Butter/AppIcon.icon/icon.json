@@ -1,0 +1,21 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:0.80000,0.87000,0.94000,1.00000",
+      "display-p3:0.52000,0.66000,0.82000,1.00000"
+    ]
+  },
+  "groups" : [
+    {
+      "layers" : [ { "glass" : true, "image-name" : "butter.svg", "name" : "butter" } ],
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "translucency" : { "enabled" : true, "value" : 0.3 }
+    },
+    {
+      "layers" : [ { "glass" : true, "image-name" : "saucer.svg", "name" : "saucer" } ],
+      "shadow" : { "kind" : "neutral", "opacity" : 0.5 },
+      "translucency" : { "enabled" : true, "value" : 0.4 }
+    }
+  ],
+  "supported-platforms" : { "squares" : "shared" }
+}

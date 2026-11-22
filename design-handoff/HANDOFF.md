@@ -1,4 +1,4 @@
-# Hearth & Page — SwiftUI Handoff
+# Butter — SwiftUI Handoff
 
 Build an iPhone app (SwiftUI only, iOS 17+, portrait) that matches the design exactly. **Build everything listed here and nothing else.** No extra screens, tabs, settings, sharing, import/export, tags, categories, onboarding, or animations beyond system defaults.
 
