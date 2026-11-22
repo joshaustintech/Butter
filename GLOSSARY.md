@@ -17,7 +17,7 @@ One ordered instruction in a Recipe's method.
 _Avoid_: Direction, instruction, stage
 
 **Source**:
-Where a Recipe came from: a webpage, or a photographed page.
+Where a Recipe came from: a webpage, or a photographed page. A Recipe typed in by hand has no Source.
 _Avoid_: Origin, link
 
 **Cooking session**:
