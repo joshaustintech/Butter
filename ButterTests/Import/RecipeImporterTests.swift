@@ -70,7 +70,9 @@ struct RecipeImporterTests {
     @Test func newWebpageIsSavedWithWebpageSource() async throws {
         let network = Network()
         network.pages[pageURL] = (200, html(image: false))
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
 
         let outcome = try await make(network).importRecipe(.webpage(pageURL), in: context)
 
@@ -86,7 +88,9 @@ struct RecipeImporterTests {
     @Test func repeatedWebpageIsDuplicateOfExistingRecipe() async throws {
         let network = Network()
         network.pages[pageURL] = (200, html(image: false))
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
         let importer = make(network)
 
         let first = try await importer.importRecipe(.webpage(pageURL), in: context)
@@ -103,7 +107,9 @@ struct RecipeImporterTests {
         let network = Network()
         network.pages[pageURL] = (200, html())
         network.photoAttempts = [.success((200, photoBytes))]
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
 
         let outcome = try await make(network).importRecipe(.webpage(pageURL), in: context)
 
@@ -115,7 +121,9 @@ struct RecipeImporterTests {
         let network = Network()
         network.pages[pageURL] = (200, html())
         network.photoAttempts = [.failure(Offline()), .success((503, Data())), .success((200, photoBytes))]
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
 
         let outcome = try await make(network).importRecipe(.webpage(pageURL), in: context)
 
@@ -129,7 +137,9 @@ struct RecipeImporterTests {
         let network = Network()
         network.pages[pageURL] = (200, html())
         network.photoAttempts = [.success((404, Data()))]
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
 
         let outcome = try await make(network).importRecipe(.webpage(pageURL), in: context)
 
@@ -143,7 +153,9 @@ struct RecipeImporterTests {
         let network = Network()
         network.pages[pageURL] = (200, html())
         network.photoAttempts = [.failure(Offline())]
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
 
         let outcome = try await make(network).importRecipe(.webpage(pageURL), in: context)
 
@@ -156,7 +168,9 @@ struct RecipeImporterTests {
     @Test func pageDownloadIsNotRetried() async throws {
         let network = Network()
         network.pages[pageURL] = (503, Data())
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
 
         await #expect(throws: RecipeImportError.badResponse) {
             try await make(network).importRecipe(.webpage(pageURL), in: context)
@@ -169,7 +183,9 @@ struct RecipeImporterTests {
 
     @Test func photographedPageIsSavedWithPhotoAsSource() async throws {
         let network = Network()
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
         let image = Data([1, 2, 3])
 
         let outcome = try await make(network).importRecipe(.photographedPage(image), in: context)
@@ -182,7 +198,9 @@ struct RecipeImporterTests {
 
     @Test func photographedPageIsNeverDuplicate() async throws {
         let network = Network()
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
         let importer = make(network)
         let image = Data([1, 2, 3])
 
@@ -197,7 +215,9 @@ struct RecipeImporterTests {
 
     @Test func nonWebpageLinkIsNotAWebpage() async throws {
         let network = Network()
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
         await #expect(throws: RecipeImportError.notAWebpage) {
             try await make(network).importRecipe(.webpage(URL(string: "ftp://example.com/x")!), in: context)
         }
@@ -206,7 +226,9 @@ struct RecipeImporterTests {
 
     @Test func undownloadablePageIsBadResponse() async throws {
         let network = Network()  // no page registered: fetch throws
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
         await #expect(throws: RecipeImportError.badResponse) {
             try await make(network).importRecipe(.webpage(pageURL), in: context)
         }
@@ -215,7 +237,9 @@ struct RecipeImporterTests {
     @Test func pageWithoutRecipeIsNoRecipeFound() async throws {
         let network = Network()
         network.pages[pageURL] = (200, Data("<html><body>Hi</body></html>".utf8))
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
         await #expect(throws: RecipeImportError.noRecipeFound) {
             try await make(network).importRecipe(.webpage(pageURL), in: context)
         }
@@ -224,7 +248,9 @@ struct RecipeImporterTests {
 
     @Test func photoWithoutTextIsNoTextFound() async throws {
         let network = Network()
-        let context = try makeContainer(inMemory: true).mainContext
+        let container = try makeContainer(inMemory: true)
+        defer { withExtendedLifetime(container) {} }
+        let context = container.mainContext
         await #expect(throws: RecipeImportError.noTextFound) {
             try await make(network, recognizerText: "  \n ").importRecipe(.photographedPage(Data([1])), in: context)
         }
