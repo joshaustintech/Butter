@@ -106,6 +106,14 @@ nonisolated enum RecipeTextParser {
         }
     }
 
+    /// Removes a leading bullet, then a leading "1.", "2)" or "Step 3:" marker.
+    /// Shared with the add-by-hand form so typed and photographed text behave the same.
+    nonisolated static func stripListMarker(_ line: String) -> String {
+        let unbulleted = stripBullet(line)
+        let unnumbered = textAfterStepMarker(unbulleted) ?? unbulleted
+        return unnumbered.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     private static func stripBullet(_ line: String) -> String {
         guard let first = line.first, bulletCharacters.contains(first) else { return line }
         return String(line.dropFirst()).trimmingCharacters(in: .whitespacesAndNewlines)
