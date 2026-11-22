@@ -23,7 +23,7 @@ struct PhotoRecipeImporterTests {
 
     @Test func blankTextThrowsNoTextFound() async {
         let importer = PhotoRecipeImporter(recognizer: FakeRecognizer(text: " \n "))
-        await #expect(throws: PhotoRecipeImportError.noTextFound) {
+        await #expect(throws: RecipeImportError.noTextFound) {
             try await importer.importRecipe(from: Data())
         }
     }

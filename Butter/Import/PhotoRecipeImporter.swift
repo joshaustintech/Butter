@@ -1,11 +1,6 @@
 import Foundation
 import Vision
 
-enum PhotoRecipeImportError: Error, Equatable {
-    /// No text could be read from the photo.
-    case noTextFound
-}
-
 /// Reads the text of a page from image data. A seam so the import pipeline is
 /// testable without Vision.
 protocol DocumentTextRecognizing: Sendable {
@@ -28,7 +23,7 @@ struct PhotoRecipeImporter {
     func importRecipe(from imageData: Data) async throws -> ImportedRecipe {
         let text = try await recognizer.recognizeText(in: imageData)
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            throw PhotoRecipeImportError.noTextFound
+            throw RecipeImportError.noTextFound
         }
         return RecipeTextParser.parse(text: text)
     }
