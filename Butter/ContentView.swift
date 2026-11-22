@@ -20,8 +20,11 @@ struct ContentView: View {
                     RecipeListView(recipes: recipes)
                 }
             }
-            .navigationTitle("Butter")
+            .navigationTitle("Recipes")
             .background(Color.butterBackground)
+            .navigationDestination(for: Recipe.self) { recipe in
+                RecipeDetailView(recipe: recipe)
+            }
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     AddRecipeButton { showingAddRecipe = true }
