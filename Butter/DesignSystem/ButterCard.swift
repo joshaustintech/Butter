@@ -21,7 +21,7 @@ extension View {
 }
 
 /// Preview-only example showing the card with real content.
-struct ButterCardExample: View {
+private struct ButterCardExample: View {
     var body: some View {
         VStack(alignment: .leading, spacing: ButterSpacing.sm) {
             Text("Lemon Herb Chicken")

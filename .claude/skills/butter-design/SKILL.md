@@ -9,7 +9,7 @@ Every piece of UI in Butter is built from the Cottage Butter design system. Read
 
 ## Workflow
 
-1. Before writing UI, look at the components that already exist in `Butter/DesignSystem/`: `ButterTheme.swift` (colors, spacing, radius, display font), `ButterComponents.swift` (`.butterPrimary`, `.butterSecondary`, `.butterCard()`, `ButterChip`) and `DesignGallery.swift` (the visual reference).
+1. Before writing UI, look at the components that already exist in `Butter/DesignSystem/`: `ButterTheme.swift` (colors, spacing, radius, display font), `ButterCard.swift`, `ButterChip.swift`, `ButterPrimaryButtonStyle.swift`, `ButterSecondaryButtonStyle.swift` (`.butterPrimary`, `.butterSecondary`, `.butterCard()`, `ButterChip`) and `DesignGallery.swift` (the visual reference).
 2. Build the view from those tokens. Use:
    - `Color.butter*` for color. Never hex values or `Color(red:green:blue:)`.
    - `ButterSpacing.*` and `ButterRadius.*` for padding, gaps and corners. Use `style: .continuous`.

@@ -48,6 +48,9 @@ struct AlreadySavedMessage: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .butterCard()
+        .onAppear {
+            AccessibilityNotification.Announcement("Already saved. \(detail)").post()
+        }
     }
 }
 

@@ -4,7 +4,7 @@
 
 - **Tokens:** `docs/design/tokens.json` is the source of truth for color, spacing, radius, type and touch targets.
 - **Colors:** 12 tokens in `Butter/DesignSystem/Colors.xcassets`, each with a light and dark variant. Dark mode is automatic.
-- **SwiftUI:** `ButterTheme.swift` (colors, spacing, radius, `Font.butterDisplay`, `butterTheme()`), `ButterComponents.swift` (`.butterPrimary`, `.butterSecondary`, `.butterCard()`, `ButterChip`), and `DesignGallery.swift` (light and dark previews).
+- **SwiftUI:** `ButterTheme.swift` (colors, spacing, radius, `Font.butterDisplay`, `butterTheme()`), `ButterCard.swift`, `ButterChip.swift`, `ButterPrimaryButtonStyle.swift`, `ButterSecondaryButtonStyle.swift` (`.butterPrimary`, `.butterSecondary`, `.butterCard()`, `ButterChip`), and `DesignGallery.swift` (light and dark previews).
 - **App assets:** sage `AccentColor`, app icon with light, dark and tinted variants (generated placeholder mark: cream plate, sage leaf), launch screen background set to `ButterBackground`.
 - **Root:** `ButterApp` applies `.butterTheme()`, and `ContentView` uses `butterBackground`.
 - **Tests:** `ButterTests/DesignTokenTests.swift` checks that every color token resolves in light and dark.

@@ -4,7 +4,12 @@ import Testing
 
 @MainActor
 struct RecipeAnswersTests {
-    let cal = Calendar(identifier: .gregorian)
+    let cal: Calendar = {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "UTC")!
+        return calendar
+    }()
+    /// 2027-01-15 08:00 UTC.
     let now = Date(timeIntervalSince1970: 1_800_000_000)
     let day: TimeInterval = 86_400
     let nothing = "I couldn't find any recipes. Try another search."
@@ -54,15 +59,30 @@ struct RecipeAnswersTests {
         #expect(answer(.find("creme"), [cake]) == "You have 1 recipe: Crème brûlée.")
     }
 
-    @Test func savedRangesFilterAndSortNewestFirst() {
-        let a = Recipe(title: "A", savedDate: now.addingTimeInterval(-3_600))
-        let b = Recipe(title: "B", savedDate: now.addingTimeInterval(-3 * day))
-        let c = Recipe(title: "C", savedDate: now.addingTimeInterval(-20 * day))
-        let d = Recipe(title: "D", savedDate: now.addingTimeInterval(-90 * day))
-        let all = [d, c, b, a]
-        #expect(answer(.saved(.lastWeek), all) == "You have 2 recipes: A and B.")
-        #expect(answer(.saved(.lastMonth), all) == "You have 3 recipes: A, B and C.")
-        #expect(answer(.saved(.today), all) == "You have 1 recipe: A.")
-        #expect(answer(.saved(.today), [d]) == nothing)
+    func saved(_ title: String, at date: Date) -> Recipe { Recipe(title: title, savedDate: date) }
+
+    @Test func todayStartsAtMidnightOfNow() {
+        let midnight = cal.startOfDay(for: now)
+        let atMidnight = saved("A", at: midnight)
+        let justBefore = saved("B", at: midnight.addingTimeInterval(-1))
+        let future = saved("C", at: now.addingTimeInterval(1))
+        #expect(answer(.saved(.today), [justBefore, future, atMidnight]) == "You have 1 recipe: A.")
+        #expect(answer(.saved(.today), [justBefore]) == nothing)
+    }
+
+    @Test func lastWeekStartsSevenDaysBeforeNow() {
+        let start = cal.date(byAdding: .day, value: -7, to: now)!
+        let atStart = saved("A", at: start)
+        let newer = saved("B", at: now.addingTimeInterval(-3_600))
+        let justBefore = saved("C", at: start.addingTimeInterval(-1))
+        #expect(answer(.saved(.lastWeek), [justBefore, atStart, newer]) == "You have 2 recipes: B and A.")
+    }
+
+    @Test func lastMonthStartsOneMonthBeforeNow() {
+        let start = cal.date(byAdding: .month, value: -1, to: now)!
+        let atStart = saved("A", at: start)
+        let newer = saved("B", at: now.addingTimeInterval(-3 * day))
+        let justBefore = saved("C", at: start.addingTimeInterval(-1))
+        #expect(answer(.saved(.lastMonth), [justBefore, atStart, newer]) == "You have 2 recipes: B and A.")
     }
 }

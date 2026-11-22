@@ -6,7 +6,7 @@ Butter's look: a sunlit butter-yellow ground, soft sage and blush accents, warm 
 - **SwiftUI implementation:** `Butter/DesignSystem/`
   - `Colors.xcassets` holds every color with a light and a dark variant.
   - `ButterTheme.swift` holds colors, spacing, radii, and the display font.
-  - `ButterComponents.swift` holds button styles, the card modifier, and chips.
+  - `ButterPrimaryButtonStyle.swift`, `ButterSecondaryButtonStyle.swift`, `ButterCard.swift` (card modifier) and `ButterChip.swift` hold the button styles, card and chips.
   - `DesignGallery.swift` is a preview-only visual check.
 - **App-level assets:** `Butter/Assets.xcassets` holds the sage `AccentColor` (system tint) and the app icon (light, dark and tinted).
 - **Checks:** `ButterTests/DesignTokenTests.swift` (every color token exists in light and dark) and `scripts/check_design_tokens.py` (tokens match colorsets, no hard-coded colors or fonts in feature code).

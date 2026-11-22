@@ -22,7 +22,7 @@ extension ButtonStyle where Self == ButterSecondaryButtonStyle {
 }
 
 /// Preview-only example showing the style enabled and disabled.
-struct ButterSecondaryButtonExample: View {
+private struct ButterSecondaryButtonExample: View {
     var body: some View {
         VStack(spacing: ButterSpacing.md) {
             Button("Maybe later") {}
