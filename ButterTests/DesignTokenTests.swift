@@ -6,7 +6,7 @@ import UIKit
 // asset catalog with both a light and a dark variant.
 @MainActor
 struct DesignTokenTests {
-    static let colorTokens = [
+    nonisolated static let colorTokens = [
         "ButterBackground",
         "ButterSurface",
         "ButterSeparator",
@@ -23,8 +23,9 @@ struct DesignTokenTests {
 
     @Test(arguments: colorTokens)
     func colorTokenHasLightAndDarkVariants(name: String) {
-        let light = UIColor(named: name, in: .main, compatibleWith: UITraitCollection(userInterfaceStyle: .light))
-        let dark = UIColor(named: name, in: .main, compatibleWith: UITraitCollection(userInterfaceStyle: .dark))
+        let color = UIColor(named: name, in: .main, compatibleWith: nil)
+        let light = color?.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light))
+        let dark = color?.resolvedColor(with: UITraitCollection(userInterfaceStyle: .dark))
         #expect(light != nil, "\(name) has no light variant")
         #expect(dark != nil, "\(name) has no dark variant")
         #expect(light != dark, "\(name) looks identical in light and dark")

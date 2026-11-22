@@ -273,6 +273,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Butter;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Butter listens for \"next\", \"back\", \"repeat\" and \"stop\" while you cook, so your hands stay free.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Butter recognizes your spoken cooking commands on this iPhone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -308,6 +310,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Butter;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Butter listens for \"next\", \"back\", \"repeat\" and \"stop\" while you cook, so your hands stay free.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Butter recognizes your spoken cooking commands on this iPhone.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
