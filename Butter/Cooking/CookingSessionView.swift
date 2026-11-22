@@ -3,23 +3,19 @@ import SwiftUI
 /// Hands-free Cooking session screen. Shows one Step at a time; the
 /// coordinator does the speaking and listening. Not wired into navigation yet.
 struct CookingSessionView: View {
-    let steps: [String]
     let coordinator: CookingSessionCoordinator
     /// Called from the finished state's Done button.
     var onDone: () -> Void = {}
 
     @Environment(\.scenePhase) private var scenePhase
 
-    private var currentStep: String {
-        let index = coordinator.progress.index
-        return steps.indices.contains(index) ? steps[index] : ""
-    }
+    private var isPaused: Bool { coordinator.state == .paused }
 
     var body: some View {
         ZStack {
             Color.butterBackground.ignoresSafeArea()
             if coordinator.state == .finished {
-                finishedView
+                CookingFinishedView(onDone: onDone)
             } else {
                 sessionView
             }
@@ -37,71 +33,25 @@ struct CookingSessionView: View {
     private var sessionView: some View {
         VStack(alignment: .leading, spacing: ButterSpacing.xl) {
             HStack {
-                Text(coordinator.progress.positionDescription)
-                    .font(.headline)
-                    .foregroundStyle(Color.butterLabelSecondary)
                 Spacer()
                 Button("Stop", systemImage: "stop.fill") { coordinator.perform(.stop) }
                     .buttonStyle(.butterSecondary)
                     .fixedSize()
             }
 
-            ScrollView {
-                Text(currentStep)
-                    .font(.title)
-                    .foregroundStyle(Color.butterLabel)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(ButterSpacing.xl)
-                    .butterCard()
+            CookingStepCard(position: coordinator.progress.positionDescription, text: coordinator.currentStep)
+
+            if coordinator.isHandsFreeAvailable || isPaused {
+                ListeningIndicator(isPaused: isPaused)
+                    .opacity(isPaused ? 0.5 : 1)
             }
 
-            if coordinator.isHandsFreeAvailable {
-                Label("Listening", systemImage: "waveform")
-                    .font(.subheadline)
-                    .foregroundStyle(Color.butterLabelSecondary)
-                    .opacity(coordinator.state == .paused ? 0.5 : 1)
-                    .accessibilityLabel(coordinator.state == .paused ? "Paused" : "Listening")
-            }
-
-            controls
-        }
-        .padding(ButterSpacing.xl)
-    }
-
-    private var controls: some View {
-        VStack(spacing: ButterSpacing.sm) {
-            Button(coordinator.progress.isLast ? "Finish" : "Next",
-                   systemImage: coordinator.progress.isLast ? "checkmark" : "forward.fill") {
-                coordinator.perform(.next)
-            }
-            .buttonStyle(.butterPrimary)
-
-            HStack(spacing: ButterSpacing.sm) {
-                Button("Back", systemImage: "backward.fill") { coordinator.perform(.back) }
-                    .buttonStyle(.butterSecondary)
-                    .disabled(coordinator.progress.isFirst)
-                Button("Repeat", systemImage: "arrow.counterclockwise") { coordinator.perform(.repeatStep) }
-                    .buttonStyle(.butterSecondary)
-            }
-        }
-    }
-
-    private var finishedView: some View {
-        VStack(spacing: ButterSpacing.xl) {
-            Spacer()
-            Image(systemName: "checkmark.circle.fill")
-                .font(.largeTitle)
-                .foregroundStyle(Color.butterAccent)
-                .accessibilityHidden(true)
-            Text("All done")
-                .font(.butterDisplay(.largeTitle))
-                .foregroundStyle(Color.butterLabel)
-            Text("Enjoy your meal.")
-                .font(.body)
-                .foregroundStyle(Color.butterLabelSecondary)
-            Spacer()
-            Button("Done", action: onDone)
-                .buttonStyle(.butterPrimary)
+            CookingControls(
+                isFirst: coordinator.progress.isFirst,
+                isLast: coordinator.progress.isLast,
+                onNext: { coordinator.perform(.next) },
+                onBack: { coordinator.perform(.back) },
+                onRepeat: { coordinator.perform(.repeatStep) })
         }
         .padding(ButterSpacing.xl)
     }
@@ -115,7 +65,8 @@ private final class PreviewSynthesizer: SpeechSynthesizing {
 
 private final class PreviewListener: CommandListening {
     let transcripts = AsyncStream<String> { _ in }
-    func start() async throws {}
+    var fails = false
+    func start() async throws { if fails { throw CommandListeningError.microphoneDenied } }
     func stop() async {}
     func shutdown() async {}
 }
@@ -134,20 +85,61 @@ private let previewSteps = [
     "Toss with the cooked gnocchi and finish with lemon zest.",
 ]
 
+private enum PreviewState { case first, middle, last, paused, handsFreeUnavailable, finished }
+
+/// Builds a coordinator that has already reached `state`, using fake adapters.
 @MainActor
-private func previewCoordinator() -> CookingSessionCoordinator {
-    CookingSessionCoordinator(
-        steps: previewSteps, synthesizer: PreviewSynthesizer(), listener: PreviewListener(),
+private func previewCoordinator(_ state: PreviewState) -> CookingSessionCoordinator {
+    let listener = PreviewListener()
+    listener.fails = state == .handsFreeUnavailable
+    let coordinator = CookingSessionCoordinator(
+        steps: previewSteps, synthesizer: PreviewSynthesizer(), listener: listener,
         audioSession: PreviewAudioSession(), setIdleTimerDisabled: { _ in })!
+    coordinator.start()
+    switch state {
+    case .first, .handsFreeUnavailable: break
+    case .middle: coordinator.perform(.next)
+    case .last: coordinator.perform(.next); coordinator.perform(.next)
+    case .paused: coordinator.pause()
+    case .finished: coordinator.perform(.stop)
+    }
+    return coordinator
 }
 
-#Preview("Light") {
-    CookingSessionView(steps: previewSteps, coordinator: previewCoordinator())
-        .preferredColorScheme(.light)
+#Preview("First Step, light") {
+    CookingSessionView(coordinator: previewCoordinator(.first)).preferredColorScheme(.light)
 }
-
-#Preview("Dark") {
-    CookingSessionView(steps: previewSteps, coordinator: previewCoordinator())
-        .preferredColorScheme(.dark)
+#Preview("First Step, dark") {
+    CookingSessionView(coordinator: previewCoordinator(.first)).preferredColorScheme(.dark)
+}
+#Preview("Middle Step, light") {
+    CookingSessionView(coordinator: previewCoordinator(.middle)).preferredColorScheme(.light)
+}
+#Preview("Middle Step, dark") {
+    CookingSessionView(coordinator: previewCoordinator(.middle)).preferredColorScheme(.dark)
+}
+#Preview("Last Step, light") {
+    CookingSessionView(coordinator: previewCoordinator(.last)).preferredColorScheme(.light)
+}
+#Preview("Last Step, dark") {
+    CookingSessionView(coordinator: previewCoordinator(.last)).preferredColorScheme(.dark)
+}
+#Preview("Paused, light") {
+    CookingSessionView(coordinator: previewCoordinator(.paused)).preferredColorScheme(.light)
+}
+#Preview("Paused, dark") {
+    CookingSessionView(coordinator: previewCoordinator(.paused)).preferredColorScheme(.dark)
+}
+#Preview("Hands-free unavailable, light") {
+    CookingSessionView(coordinator: previewCoordinator(.handsFreeUnavailable)).preferredColorScheme(.light)
+}
+#Preview("Hands-free unavailable, dark") {
+    CookingSessionView(coordinator: previewCoordinator(.handsFreeUnavailable)).preferredColorScheme(.dark)
+}
+#Preview("Finished, light") {
+    CookingSessionView(coordinator: previewCoordinator(.finished)).preferredColorScheme(.light)
+}
+#Preview("Finished, dark") {
+    CookingSessionView(coordinator: previewCoordinator(.finished)).preferredColorScheme(.dark)
 }
 #endif

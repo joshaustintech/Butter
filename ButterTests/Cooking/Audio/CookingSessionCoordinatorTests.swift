@@ -166,4 +166,30 @@ struct CookingSessionCoordinatorTests {
         rig.coordinator.perform(.next)
         #expect(rig.coordinator.progress.index == 1)
     }
+
+    @Test func currentStepFollowsCommandsAndStaysOnPause() async {
+        let rig = Rig()
+        #expect(rig.coordinator.currentStep == "one")
+        rig.coordinator.start()
+        await rig.waitUntil(.listening)
+        rig.coordinator.perform(.next)
+        #expect(rig.coordinator.currentStep == "two")
+        rig.coordinator.perform(.repeatStep)
+        #expect(rig.coordinator.currentStep == "two")
+        rig.coordinator.perform(.back)
+        #expect(rig.coordinator.currentStep == "one")
+        rig.coordinator.perform(.next)
+        rig.coordinator.pause()
+        #expect(rig.coordinator.currentStep == "two")
+    }
+
+    @Test func currentStepStaysOnLastStepWhenFinished() async {
+        let rig = Rig(steps: ["one", "two"])
+        rig.coordinator.start()
+        await rig.waitUntil(.listening)
+        rig.coordinator.perform(.next)
+        rig.coordinator.perform(.next)
+        #expect(rig.coordinator.state == .finished)
+        #expect(rig.coordinator.currentStep == "two")
+    }
 }
