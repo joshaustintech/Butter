@@ -3,11 +3,20 @@ import SwiftUI
 
 @main
 struct ButterApp: App {
+    private let store = RecipeStore.open()
+
     var body: some Scene {
         WindowGroup {
-            RecipeListView()
-                .tint(Palette.accent.color)
+            Group {
+                switch store {
+                case let .success(container):
+                    RecipeListView()
+                        .modelContainer(container)
+                case let .failure(error):
+                    StoreUnavailableView(error: error)
+                }
+            }
+            .tint(Palette.accent.color)
         }
-        .modelContainer(for: Recipe.self)
     }
 }

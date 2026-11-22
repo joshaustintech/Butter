@@ -22,6 +22,7 @@ struct RecipeEditorView: View {
     @State private var draft: RecipeDraft
     @State private var original: RecipeDraft
     @State private var isConfirmingDelete = false
+    @State private var failure: SaveFailure?
 
     init(mode: Mode) {
         self.mode = mode
@@ -68,22 +69,43 @@ struct RecipeEditorView: View {
         } message: {
             Text("This can’t be undone.")
         }
+        .alert(
+            failure?.title ?? "",
+            isPresented: Binding(get: { failure != nil }, set: { if !$0 { failure = nil } }),
+            presenting: failure
+        ) { _ in
+            Button("OK", role: .cancel) {}
+        } message: { failure in
+            Text(failure.message)
+        }
     }
 
     private func save() {
-        guard let content = draft.content else { return }
-        switch mode {
-        case .new: modelContext.insert(Recipe(content: content))
-        case let .edit(recipe): recipe.content = content
+        guard let content = draft.content else {
+            failure = SaveFailure(title: "Couldn’t Save Recipe", message: "Give the recipe a title first.")
+            return
         }
-        dismiss()
+        do {
+            try modelContext.commit {
+                switch mode {
+                case .new: modelContext.insert(Recipe(content: content))
+                case let .edit(recipe): recipe.content = content
+                }
+            }
+            dismiss()
+        } catch {
+            failure = SaveFailure(title: "Couldn’t Save Recipe", error: error)
+        }
     }
 
     private func delete() {
-        if case let .edit(recipe) = mode {
-            modelContext.delete(recipe)
+        guard case let .edit(recipe) = mode else { return }
+        do {
+            try modelContext.commit { modelContext.delete(recipe) }
+            dismiss()
+        } catch {
+            failure = SaveFailure(title: "Couldn’t Delete Recipe", error: error)
         }
-        dismiss()
     }
 }
 
