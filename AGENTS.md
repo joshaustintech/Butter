@@ -19,7 +19,7 @@ Single-context: root `GLOSSARY.md` + `docs/adr/` (created lazily). See `docs/age
 Every screen and component follows the Cottage Butter design system. Before building or changing any UI:
 
 - Read `docs/design/README.md` (rules) and use the `butter-design` skill in `.claude/skills/butter-design/`.
-- Tokens: `docs/design/tokens.json`. SwiftUI implementation: `Butter/DesignSystem/` (`ButterTheme.swift`, `ButterComponents.swift`, `DesignGallery.swift`). Colors: `Butter/DesignSystem/Colors.xcassets`. Accent and app icon: `Butter/Assets.xcassets`.
+- Tokens: `docs/design/tokens.json`. SwiftUI implementation: `Butter/DesignSystem/` (`ButterTheme.swift`, `ButterCard.swift`, `ButterChip.swift`, `ButterPrimaryButtonStyle.swift`, `ButterSecondaryButtonStyle.swift`, `DesignGallery.swift`). Colors: `Butter/DesignSystem/Colors.xcassets`. Accent and app icon: `Butter/Assets.xcassets`.
 - Use `Color.butter*`, `ButterSpacing`, `ButterRadius`, Dynamic Type text styles, `Font.butterDisplay(_:)`, SF Symbols, `.butterPrimary`, `.butterSecondary`, `.butterCard()` and `ButterChip`. No hard-coded colors, fixed font sizes or custom fonts outside `Butter/DesignSystem/`.
 - Yellow is a fill, never text or error color. Tap targets are at least 44 pt.
 - Before finishing UI work, run `python3 scripts/check_design_tokens.py` from the repo root. It must pass.

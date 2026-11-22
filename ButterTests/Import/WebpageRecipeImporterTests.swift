@@ -45,7 +45,7 @@ struct WebpageRecipeImporterTests {
     @Test func nonWebSchemesAreRejectedWithoutFetching() async {
         let importer = WebpageRecipeImporter { _ in throw Unreachable() }
         for string in ["file:///tmp/recipe.html", "ftp://example.com/recipe", "mailto:a@example.com"] {
-            await #expect(throws: WebpageRecipeImporter.ImportError.notAWebpage) {
+            await #expect(throws: RecipeImportError.notAWebpage) {
                 try await importer.importRecipe(from: URL(string: string)!)
             }
         }
@@ -53,7 +53,7 @@ struct WebpageRecipeImporterTests {
 
     @Test func serverErrorIsBadResponse() async {
         let importer = importer(status: 404, body: page(pancakes))
-        await #expect(throws: WebpageRecipeImporter.ImportError.badResponse) {
+        await #expect(throws: RecipeImportError.badResponse) {
             try await importer.importRecipe(from: pageURL)
         }
     }
@@ -62,28 +62,28 @@ struct WebpageRecipeImporterTests {
         let importer = WebpageRecipeImporter { url in
             (Data(), URLResponse(url: url, mimeType: "text/html", expectedContentLength: 0, textEncodingName: "utf-8"))
         }
-        await #expect(throws: WebpageRecipeImporter.ImportError.badResponse) {
+        await #expect(throws: RecipeImportError.badResponse) {
             try await importer.importRecipe(from: pageURL)
         }
     }
 
-    @Test func fetchFailurePropagates() async {
+    @Test func fetchFailureIsBadResponse() async {
         let importer = WebpageRecipeImporter { _ in throw Unreachable() }
-        await #expect(throws: Unreachable.self) {
+        await #expect(throws: RecipeImportError.badResponse) {
             try await importer.importRecipe(from: pageURL)
         }
     }
 
     @Test func pageWithoutRecipeIsNoRecipeFound() async {
         let body = Data(#"<html><script type="application/ld+json">{"@type":"WebSite","name":"Site"}</script></html>"#.utf8)
-        await #expect(throws: WebpageRecipeImporter.ImportError.noRecipeFound) {
+        await #expect(throws: RecipeImportError.noRecipeFound) {
             try await importer(body: body).importRecipe(from: pageURL)
         }
     }
 
     @Test func pageWithoutAnyJSONLDIsNoRecipeFound() async {
         let body = Data("<html><body><h1>Pancakes</h1></body></html>".utf8)
-        await #expect(throws: WebpageRecipeImporter.ImportError.noRecipeFound) {
+        await #expect(throws: RecipeImportError.noRecipeFound) {
             try await importer(body: body).importRecipe(from: pageURL)
         }
     }
